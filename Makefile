@@ -39,9 +39,9 @@ clean_temp:
 example: stills2dv
 	mkdir -p tmp
 	rm -f tmp.mpg out.mpg
-	./stills2dv -tmpdir tmp exampleworkfile.s2d
-	ffmpeg -r 60.00 -f image2 -i tmp/%05d.jpg -i example_data_files/09_1_2_3_4.mp3 -vcodec mpeg4 -vb 9000k -ab 128k -aspect 16:9 -pass 1 tmp.avi
-	ffmpeg -r 60.00 -f image2 -i tmp/%05d.jpg -i example_data_files/09_1_2_3_4.mp3 -vcodec mpeg4 -vb 9000k -ab 128k -aspect 16:9 -pass 2 out.avi
+	./stills2dv -tmpdir tmp -showoutput exampleworkfile.s2d
+	ffmpeg -r 24.00 -f image2 -i tmp/%05d.jpg -i example_data_files/09_1_2_3_4.mp3 -vcodec mpeg4 -vb 9000k -ab 128k -aspect 16:9 -pass 1 tmp.avi
+	ffmpeg -r 24.00 -f image2 -i tmp/%05d.jpg -i example_data_files/09_1_2_3_4.mp3 -vcodec mpeg4 -vb 9000k -ab 128k -aspect 16:9 -pass 2 out.avi
 	rm -f tmp/* tmp.avi
 #	mplayer out.avi -fs
 

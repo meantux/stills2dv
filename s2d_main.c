@@ -473,7 +473,7 @@ unsigned char *resize(Image *im, float fx, float fy, float fzoom)
   unsigned char *res;
   float rpw, fw, frx, fry, frw, frh, fdx, fdy, fstartx, fstarty, fendx, fendy, fred, icolor; 
   float fweight, ftotalweight, fdelta, fgreen, fblue, fi, fj, fcolor;
-  int bufsize, outoffset, inoffset, ix, iy, i, j, istartx, istarty, iendx, iendy, *pprev=NULL;
+  int midx, midy, bufsize, outoffset, inoffset, ix, iy, i, j, istartx, istarty, iendx, iendy, *pprev=NULL;
   static int last_serial= -1;
   static float last_fx, last_fy, last_fzoom;
   TRACE;
@@ -576,7 +576,10 @@ unsigned char *resize(Image *im, float fx, float fy, float fzoom)
 	          ftotalweight=1.0;
 	          istartx=fdx;
 	          istarty=fdy;
-	          motion_blur(im, &fred, &fgreen, &fblue, &ftotalweight, istartx, istarty, pprev[0], pprev[1]);
+		  midx=(istartx+pprev[0])/2;
+		  midy=(istarty+pprev[1])/2;
+		  
+	          motion_blur(im, &fred, &fgreen, &fblue, &ftotalweight, istartx, istarty, midx, midy);
  	          fred = fred / ftotalweight;
 	          fgreen = fgreen / ftotalweight;
 	          fblue = fblue / ftotalweight;
@@ -805,7 +808,7 @@ int isawhitechar (char c)
 
 unsigned int hash(char *str)
 {
-  int res=0;
+  unsigned int res=0;
   int c;
   TRACE;
   if(str==NULL) return 0;
@@ -1321,6 +1324,7 @@ int main (int argc, char *argv[])
 {
   char **splitted;
   int param;
+  int cmd;
   char *fn=NULL;
   TRACE;
   if((tmpdir=getenv("TMPDIR"))==NULL)tmpdir="/tmp";
@@ -1330,27 +1334,30 @@ int main (int argc, char *argv[])
       
       if (argv[param][0]=='-')
 	{
-	  switch (hash(&argv[param][1]))
+	  cmd=hash(&argv[param][1]);
+	  //printf("command is %s (%d)\n",&argv[param][1],cmd);
+	  switch (cmd)
 	    {
-	    case 2247880249U: // version
+	      
+	    case 2247880249: // version
 	      printf("stills2dv version Alpha 0.601, http://www.deniscarl.com/stills2dv/\n");
 	      return 0;
-	    case 231495749U: // tmpdir	  
+	    case 231495749: // tmpdir	  
 	      tmpdir=strdup(argv[++param]);
 	      break;
-	    case 4039168431U: // showoutput
+	    case 4039168431: // showoutput
 	      printf("Setting showouput to true!\n");
 	      showoutput= true;
 	      break;
-  	    case 3647253645U: // fastrender
+  	    case 3647253645: // fastrender
 	      fastrender=true;
 	      break;
-	    case 3286000605U: // nomotionblur
+	    case 3286000605: // nomotionblur
 	      motionblur=false;
 	      break;
 	    default:	      
 	      fprintf(stderr, "Unknown command: %s\nUsage: %s\n", argv[param], usage);
-	      return 0;	 
+	      return -1;	 
 	    }
 	}
       else
